@@ -8,8 +8,8 @@
     <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
-    <div class="footer">
-        &copy; <?= date('Y'); ?> Sistem Voting Online
-    </div>
+    <footer>
+       <span>&copy; <?= date('Y'); ?> Sistem Voting Online</span>
+    </footer>
 </body>
 </html>
