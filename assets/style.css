@@ -1,0 +1,155 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #f4f6f8;
+  color: #333;
+}
+
+.container {
+  width: 90%;
+  max-width: 900px;
+  margin: 40px auto;
+  background: #fff;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+header {
+  background: #007bff;
+  padding: 20px 0;
+}
+
+header .container {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 15px 25px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* INI YANG PENTING */
+header h1 {
+  color: #000000;
+  margin: 0;
+  font-size: 20px;
+}
+
+header nav a {
+  color: #000000;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+header nav a:hover {
+  text-decoration: underline;
+}
+
+h2 {
+  margin-bottom: 20px;
+  color: #222;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+table th {
+  background: #007bff;
+  color: #fff;
+  padding: 10px;
+}
+
+table td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+button {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #0056b3;
+}
+
+.btn-danger {
+  background: #dc3545;
+}
+
+.btn-danger:hover {
+  background: #b52a37;
+}
+
+.alert {
+  padding: 10px;
+  background: #e9f5ff;
+  border-left: 4px solid #007bff;
+  margin-bottom: 15px;
+}
+
+header .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+nav a {
+  font-weight: 500;
+  padding: 6px 10px;
+  border-radius: 5px;
+}
+
+nav a:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+button {
+  margin-top: 10px;
+}
+
+main {
+  flex-grow: 1;
+}
+
+footer {
+  display: block;
+  text-align: center;
+  padding: 20px;
+  color: #777;
+  font-size: 14px;
+}
+
+footer span {
+  color: #007bffaf;
+  text-decoration: none;
+  font-weight: 400;
+}
