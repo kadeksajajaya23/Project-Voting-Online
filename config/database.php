@@ -3,7 +3,7 @@ class Database {
     private $host = "localhost";
     private $db_name = "voting_db";
     private $username = "root";
-    private $password = "saja.stikom";
+    private $password = "";
 
     public function getConnection() {
         try {
