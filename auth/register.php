@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once __DIR__ . '/../config/Database.php';
+require_once __DIR__ . '/../config/database.php';
 
 $db = new Database();
 $conn = $db->getConnection();
@@ -27,8 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = "Email sudah terdaftar";
         } else {
 
-            // 🔐 HASH PASSWORD (INI YANG KAMU MINTA)
-            $hashedPassword = password_hash('123456', PASSWORD_DEFAULT);
+            // HASH PASSWORD (Menggunakan password dari input)
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
             $stmt = $conn->prepare("
                 INSERT INTO users (username, email, password)
@@ -48,11 +48,11 @@ require_once __DIR__ . '/../layouts/header.php';
     <h2>Register</h2>
 
     <?php if ($error): ?>
-        <p style="color:red"><?= $error ?></p>
+        <p style="color:red"><?= htmlspecialchars($error) ?></p>
     <?php endif; ?>
 
     <?php if ($success): ?>
-        <p style="color:green"><?= $success ?></p>
+        <p style="color:green"><?= htmlspecialchars($success) ?></p>
     <?php endif; ?>
 
     <form method="post">

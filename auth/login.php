@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once __DIR__ . '/../config/Database.php';
+require_once __DIR__ . '/../config/database.php';
 
 $db = new Database();
 $conn = $db->getConnection();
@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['user_id']  = $user['id'];
         $_SESSION['username'] = $user['username'];
 
-        // 🔴 WAJIB ADA EXIT
+        // WAJIB ADA EXIT
         header("Location: ../index.php");
         exit;
 
