@@ -1,8 +1,14 @@
 <?php
+// Tambahkan pengecekan sesi
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../auth/login.php");
+    exit;
+}
+
 include '../layouts/header.php';
-include '../config/Database.php';
-include '../classes/Polling.php';
-include '../classes/Option.php';
+include '../config/database.php';
+include '../classes/polling.php';
+include '../classes/option.php';
 
 $db = (new Database())->getConnection();
 $polling = new Polling($db);
@@ -20,10 +26,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $pollingId = $db->lastInsertId();
 
     foreach ($_POST['opsi'] as $o) {
-        $option->add($pollingId, $o);
+        // Sanitasi input opsi
+        $o = trim($o);
+        if (!empty($o)) { // Hanya simpan opsi yang tidak kosong
+            $option->add($pollingId, $o);
+        }
     }
 
     header("Location: index.php");
+    exit; // Pastikan exit setelah redirect
 }
 ?>
 
