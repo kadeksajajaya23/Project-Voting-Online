@@ -164,6 +164,7 @@ button {
 /* tombol */
 .btn-vote {
   margin-top: 16px;
+  margin-bottom: 15px;
 }
 
 .option-row:first-child {
