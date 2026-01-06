@@ -1,18 +1,15 @@
 <?php
-// Tambahkan pengecekan sesi
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../auth/login.php");
-    exit;
-}
-
+session_start();
 include '../layouts/header.php';
-include '../config/database.php';
-include '../classes/polling.php';
-include '../classes/option.php';
+include '../config/Database.php';
+include '../classes/Polling.php';
+include '../classes/Option.php';
+include '../classes/Notification.php';
 
 $db = (new Database())->getConnection();
 $polling = new Polling($db);
 $option = new Option($db);
+$notif = new Notification($db);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $polling->create(
@@ -26,16 +23,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $pollingId = $db->lastInsertId();
 
     foreach ($_POST['opsi'] as $o) {
-        // Sanitasi input opsi
-        $o = trim($o);
-        if (!empty($o)) { // Hanya simpan opsi yang tidak kosong
-            $option->add($pollingId, $o);
-        }
+        $option->add($pollingId, $o);
     }
 
+    // ✅ KIRIM NOTIFIKASI
+    $notif->send($_SESSION['user_id'], "Polling baru berhasil dibuat");
+
     header("Location: index.php");
-    exit; // Pastikan exit setelah redirect
+    exit;
 }
+
 ?>
 
 <div class="container">
