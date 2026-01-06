@@ -1,28 +1,23 @@
 <?php
-include '../config/Database.php';
-include '../classes/Vote.php';
+class Notification {
+    private $conn;
+    public function __construct($db) {
+        $this->conn = $db;
+    }
 
-$db = (new Database())->getConnection();
-$vote = new Vote($db);
+    public function send($user_id, $msg) {
+        return $this->conn->prepare(
+            "INSERT INTO notifications(user_id,message) VALUES (?,?)"
+        )->execute([$user_id, $msg]);
+    }
 
-header("Content-Type: text/csv");
-header("Content-Disposition: attachment; filename=hasil.csv");
-
-$output = fopen("php://output", "w");
-fputcsv($output, ["Opsi", "Jumlah Vote"]);
-
-$data = $vote->hasil($_GET['polling_id']);
-while ($row = $data->fetch(PDO::FETCH_ASSOC)) {
-    fputcsv($output, $row);
+    public function get($user_id) {
+        $stmt = $this->conn->prepare(
+            "SELECT * FROM notifications WHERE user_id=? ORDER BY id DESC"
+        );
+        $stmt->execute([$user_id]);
+        return $stmt;
+    }
 }
-fclose($output);
+
 ?>
-
-<div class="container">
-    <h2>Terima kasih 🙏</h2>
-    <p>Vote Anda berhasil disimpan.</p>
-
-    <a href="index.php">Kembali ke Polling</a>
-</div>
-
-<?php require_once '../layouts/footer.php'; ?>
