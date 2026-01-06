@@ -21,11 +21,12 @@ class Polling {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function isClosed($id) {
-        $stmt = $this->conn->prepare(
-            "SELECT end_date < NOW() FROM pollings WHERE id=?"
-        );
-        $stmt->execute([$id]);
-        return $stmt->fetchColumn();
-    }
+public function isClosed($id) {
+    $stmt = $this->conn->prepare(
+        "SELECT NOW() < start_date OR NOW() > end_date FROM pollings WHERE id=?"
+    );
+    $stmt->execute([$id]);
+    return (bool) $stmt->fetchColumn();
+}
+
 }
