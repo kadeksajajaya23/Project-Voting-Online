@@ -2,12 +2,20 @@
 session_start();
 require_once '../config/Database.php';
 
+date_default_timezone_set('Asia/Jakarta');
+
+/* =========================
+   VALIDASI ID
+========================= */
 if (!isset($_GET['id'])) {
     die('Polling tidak ditemukan');
 }
 
 $polling_id = (int) $_GET['id'];
 
+/* =========================
+   KONEKSI DATABASE
+========================= */
 $database = new Database();
 $conn = $database->getConnection();
 
@@ -23,17 +31,28 @@ if (!$polling) {
 }
 
 /* =========================
+   CEK STATUS POLLING (BERDASARKAN WAKTU)
+========================= */
+$now = date('Y-m-d H:i:s');
+
+$isActive = true;
+
+if (!empty($polling['end_date']) && $now > $polling['end_date']) {
+    $isActive = false;
+}
+
+/* =========================
    PROSES VOTE
 ========================= */
 if (isset($_POST['vote'])) {
 
+    if (!$isActive) {
+        die('Polling sudah ditutup');
+    }
+
     if (!isset($_SESSION['user_id'])) {
         header("Location: ../auth/login.php");
         exit;
-    }
-
-    if ($polling['status'] !== 'Aktif') {
-        die('Polling sudah ditutup');
     }
 
     if (!isset($_POST['option_id'])) {
@@ -43,9 +62,9 @@ if (isset($_POST['vote'])) {
     $user_id   = $_SESSION['user_id'];
     $option_id = (int) $_POST['option_id'];
 
-    // Cek sudah vote atau belum
+    // Cek apakah sudah vote
     $cek = $conn->prepare("
-        SELECT id FROM votes 
+        SELECT id FROM votes
         WHERE user_id = ? AND polling_id = ?
     ");
     $cek->execute([$user_id, $polling_id]);
@@ -54,6 +73,7 @@ if (isset($_POST['vote'])) {
         die('Anda sudah melakukan voting');
     }
 
+    // Simpan vote
     $stmtVote = $conn->prepare("
         INSERT INTO votes (user_id, polling_id, option_id)
         VALUES (?, ?, ?)
@@ -85,7 +105,7 @@ if (isset($_POST['komentar'])) {
                 $isi
             ]);
 
-            $successKomentar = "Komentar menunggu persetujuan.";
+            $successKomentar = "Komentar berhasil dikirim dan menunggu persetujuan.";
         }
     }
 }
@@ -106,26 +126,29 @@ require_once '../layouts/header.php';
         <h2><?= htmlspecialchars($polling['judul']) ?></h2>
         <p><?= htmlspecialchars($polling['deskripsi']) ?></p>
 
-        <?php if (isset($polling['status']) && $polling['status'] === 'Aktif'): ?>
-        <form method="post">
-            <?php foreach ($options as $opt): ?>
-                <div>
-                    <input type="radio"
-                           name="option_id"
-                           value="<?= $opt['id'] ?>"
-                           required>
-                    <?= htmlspecialchars($opt['nama_opsi']) ?>
-                </div>
-            <?php endforeach; ?>
-
-            <button type="submit" name="vote">Vote</button>
-        </form>
+        <!-- STATUS POLLING -->
+        <?php if ($isActive): ?>
+            <p style="color:green;"><b>Polling sedang berlangsung</b></p>
         <?php else: ?>
-            <p><b>Polling sudah ditutup.</b></p>
+            <p style="color:red;"><b>Polling sudah ditutup</b></p>
+        <?php endif; ?>
+
+        <!-- FORM VOTE -->
+        <?php if ($isActive): ?>
+            <form method="post">
+                <?php foreach ($options as $opt): ?>
+                    <div class="option-row">
+                        <input type="radio" name="option_id" value="<?= $opt['id'] ?>" required>
+                        <?= htmlspecialchars($opt['nama_opsi']) ?>
+                    </div>
+                <?php endforeach; ?>
+                <button type="submit" name="vote" class="btn-vote">Vote</button>
+            </form>
         <?php endif; ?>
 
         <hr>
 
+        <!-- KOMENTAR -->
         <h4>Komentar</h4>
 
         <?php if (!empty($errorKomentar)): ?>
@@ -137,7 +160,7 @@ require_once '../layouts/header.php';
         <?php endif; ?>
 
         <form method="post">
-            <textarea name="isi" required></textarea>
+            <textarea name="isi" required></textarea><br>
             <button type="submit" name="komentar">Kirim Komentar</button>
         </form>
 
