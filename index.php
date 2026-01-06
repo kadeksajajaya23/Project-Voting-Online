@@ -1,41 +1,18 @@
-<?php 
-
-session_start();
+<?php
+include 'layouts/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Voting Online</title>
-  
-    <link rel="stylesheet" href="assets/style.css">
-</head>
-<body>
-    <?php 
-   
-    include 'layouts/header.php'; 
-    ?>
 
+<div class="container">
+<h2>Selamat Datang</h2>
 
-    <main>
-        <div class="container">
-            <h2>Selamat Datang</h2>
+<p>
+Aplikasi ini memungkinkan pengguna untuk membuat polling,
+melakukan voting, dan melihat hasil secara real-time setelah polling berakhir.
+</p>
 
-            <p> 
-                Aplikasi ini memungkinkan pengguna untuk membuat polling, melakukan voting, dan melihat hasil secara real-time setelah polling berakhir.
-            </p>
+<a href="polling/index.php">
+    <button>Lihat Polling</button>
+</a>
+</div>
 
-          
-            <a href="polling/index.php">
-                <button>Lihat Polling</button>
-            </a>
-        </div>
-    </main>
-
-    <?php 
-
-    include 'layouts/footer.php'; 
-    ?>
-</body>
-</html>
+<?php include 'layouts/footer.php'; ?>
