@@ -10,7 +10,6 @@ include 'layouts/header.php';
         Selamat Datang
     <?php endif; ?>
 </h2>
-
 <p>
 Aplikasi ini memungkinkan pengguna untuk membuat polling,
 melakukan voting, dan melihat hasil secara real-time setelah polling berakhir.
