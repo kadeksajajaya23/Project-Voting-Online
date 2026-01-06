@@ -6,9 +6,6 @@
 }
 
 body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
   background: #f4f6f8;
   color: #333;
 }
@@ -74,6 +71,7 @@ table th {
 table td {
   padding: 10px;
   border-bottom: 1px solid #ddd;
+  text-align: center;
 }
 
 input,
@@ -115,6 +113,13 @@ button:hover {
   margin-bottom: 15px;
 }
 
+.footer {
+  text-align: center;
+  padding: 20px;
+  color: #777;
+  font-size: 14px;
+}
+
 header .container {
   display: flex;
   justify-content: space-between;
@@ -135,20 +140,148 @@ button {
   margin-top: 10px;
 }
 
-main {
-  flex-grow: 1;
+/* RESET khusus voting */
+.option-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
 }
 
-footer {
-  display: block;
-  text-align: center;
-  padding: 20px;
-  color: #777;
-  font-size: 14px;
+/* pastikan radio tidak loncat */
+.option-row input[type="radio"] {
+  margin: 0;
+  width: auto;
 }
 
-footer span {
-  color: #007bffaf;
+/* teks opsi */
+.option-row label {
+  margin: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+/* tombol */
+.btn-vote {
+  margin-top: 16px;
+}
+
+.option-row:first-child {
+  margin-top: 20px;
+}
+.result-row {
+  margin-bottom: 15px;
+}
+
+.progress {
+  background: #e0e0e0;
+  border-radius: 6px;
+  height: 20px;
+  margin-top: 5px;
+}
+
+.progress-bar {
+  background: #4caf50;
+  height: 100%;
+  border-radius: 6px;
+}
+
+.btn-back {
+  display: inline-block;
+  margin-top: 20px;
   text-decoration: none;
-  font-weight: 400;
+  color: #fff;
+  background: #333;
+  padding: 8px 15px;
+  border-radius: 5px;
+}
+
+.poll-result {
+  margin-bottom: 25px;
+}
+
+.result-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.result-list li {
+  padding: 6px 0;
+}
+.text-muted {
+  color: #6c757d;
+  font-style: italic;
+  margin-top: 10px;
+}
+
+/* ===== BUTTON GLOBAL ===== */
+.btn {
+  display: inline-block;
+  padding: 7px 14px;
+  font-size: 14px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+/* ===== VARIAN ===== */
+.btn-primary {
+  background: #007bff;
+  color: #fff;
+}
+.btn-primary:hover {
+  background: #0056b3;
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: #fff;
+}
+.btn-secondary:hover {
+  background: #565e64;
+}
+
+/* Detail */
+.btn-detail {
+  background: transparent;
+  color: #007bff;
+  border: 1px solid #007bff;
+}
+.btn-detail:hover {
+  background: #007bff;
+  color: #fff;
+}
+
+/* Edit */
+.btn-edit {
+  background: #28a745;
+  color: #fff;
+}
+.btn-edit:hover {
+  background: #1e7e34;
+}
+
+/* Hapus */
+.btn-danger {
+  background: #dc3545;
+  color: #fff;
+}
+.btn-danger:hover {
+  background: #b52a37;
+}
+
+/* ===== LAYOUT ===== */
+.action-buttons {
+  margin-bottom: 15px;
+  display: flex;
+  gap: 10px;
+}
+
+.action-cell {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
 }
