@@ -54,16 +54,24 @@ require_once __DIR__ . '/../layouts/header.php';
     <?php if ($success): ?>
         <p style="color:green"><?= $success ?></p>
     <?php endif; ?>
-
+    
     <form method="post">
-        <label>Username</label>
-        <input type="text" name="username" required>
-
-        <label>Email</label>
-        <input type="email" name="email" required>
-
-        <label>Password</label>
-        <input type="password" name="password" required>
+        <div class="box-form">
+            <label>Username</label>
+            <input type="text" name="username" required>
+        </div>
+        <div class="box-form">
+            <label>Email</label>
+            <input type="email" name="email" required>
+        </div>
+        <div class="box-form">
+            <label>Password</label>
+            <input type="password" name="password" id="password" required>
+            <div class="show-password">
+                <input type="checkbox" id="showPasswordCheckbox" onchange="togglePasswordVisibility()">
+                <label for="showPasswordCheckbox">Tampilkan Password</label>
+            </div>
+        </div>
 
         <button type="submit">Daftar</button>
     </form>

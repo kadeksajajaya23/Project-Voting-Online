@@ -47,11 +47,18 @@ require_once __DIR__ . '/../layouts/header.php';
     <?php endif; ?>
 
     <form method="post" autocomplete="off">
-        <label>Email</label>
-        <input type="email" name="email" required>
-
-        <label>Password</label>
-        <input type="password" name="password" required>
+        <div class="box-form">
+            <label>Email</label>
+            <input type="email" name="email" required>
+        </div>
+        <div class="box-form">
+            <label>Password</label>
+            <input type="password" name="password" id="password" required>
+            <div class="show-password">
+                <input type="checkbox" id="showPasswordCheckbox" onchange="togglePasswordVisibility()">
+                <label for="showPasswordCheckbox">Tampilkan Password</label>
+            </div>
+        </div>
 
         <button type="submit">Login</button>
     </form>
