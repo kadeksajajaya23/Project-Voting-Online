@@ -4,6 +4,10 @@ if (!isset($_SESSION['user_id'])) {
     header("Location: ../auth/login.php");
     exit;
 }
+
+// Set timezone agar sinkron di seluruh sistem
+date_default_timezone_set('Asia/Makassar');
+
 include '../layouts/header.php';
 include '../config/Database.php';
 include '../classes/Polling.php';
@@ -28,18 +32,27 @@ $data = $polling->all();
             <th>Aksi</th>
         </tr>
 
-        <?php while ($row = $data->fetch(PDO::FETCH_ASSOC)) { ?>
+        <?php while ($row = $data->fetch(PDO::FETCH_ASSOC)) { 
+            $now = time();
+            $start = strtotime($row['start_date']);
+            $end   = strtotime($row['end_date']);
+
+            if ($now < $start) {
+                $status = "Belum Dimulai";
+            } elseif ($now <= $end) {
+                $status = "Aktif";
+            } else {
+                $status = "Ditutup";
+            }
+        ?>
             <tr>
                 <td><?= htmlspecialchars($row['judul']); ?></td>
-                <td>
-                    <?= (strtotime($row['end_date']) < time()) ? "Ditutup" : "Aktif"; ?>
-                </td>
+                <td><?= $status; ?></td>
                 <td class="action-cell">
                     <a href="detail.php?id=<?= $row['id']; ?>" class="btn btn-detail">Detail</a>
 
                     <?php if (isset($_SESSION['user_id']) && $_SESSION['user_id'] == $row['user_id']) { ?>
                         <a href="edit.php?id=<?= $row['id']; ?>" class="btn btn-edit">Edit</a>
-
                         <a href="delete.php?id=<?= $row['id']; ?>"
                            class="btn btn-danger"
                            onclick="return confirm('Yakin ingin menghapus polling ini?')">
