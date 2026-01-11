@@ -80,7 +80,6 @@ select {
   width: 100%;
   padding: 10px;
   margin-top: 5px;
-  margin-bottom: 15px;
   border: 1px solid #ccc;
   border-radius: 6px;
 }
@@ -228,7 +227,7 @@ button {
   cursor: pointer;
 }
 
-/* ===== VARIAN ===== */
+/* VARIAN */
 .btn-primary {
   background: #007bff;
   color: #fff;
@@ -274,7 +273,7 @@ button {
   background: #b52a37;
 }
 
-/* ===== LAYOUT ===== */
+/* LAYOUT */
 .action-buttons {
   margin-bottom: 15px;
   display: flex;
@@ -285,4 +284,81 @@ button {
   display: flex;
   justify-content: center;
   gap: 6px;
+}
+
+/* login */
+.box-form {
+  position: relative;
+  margin-bottom: 1.5rem;
+  padding-bottom: -1.5rem;
+}
+
+.box-form label {
+  display: block;
+  font-weight: bold;
+  color: #333;
+}
+
+.box-form input[type="text"],
+.box-form input[type="email"],
+.box-form input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+
+/* Container untuk checkbox + label "Tampilkan Password" */
+.show-password {
+  position: absolute;
+  left: 0;
+  display: flex;
+  align-items: center;
+  margin-top: 0.4rem;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.show-password input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+}
+
+.show-password label {
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Print pdf */
+.print-pdf {
+  font-family: Arial, sans-serif;
+  margin: 40px;
+  line-height: 1.6;
+}
+.print-pdf h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+.print-pdf .result {
+  margin-bottom: 15px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #f9f9f9;
+}
+.print-pdf .result strong {
+  color: #007bff;
+}
+.print-pdf .footer {
+  margin-top: 30px;
+  text-align: center;
+  font-size: 12px;
+  color: #777;
+  border-top: 1px solid #ccc;
+  padding-top: 10px;
 }
