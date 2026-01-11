@@ -1,5 +1,9 @@
 <?php
 session_start();
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../auth/login.php");
+    exit;
+}
 require_once '../config/Database.php';
 require_once '../layouts/header.php';
 
@@ -102,9 +106,9 @@ $pollings = $stmtPolling->fetchAll(PDO::FETCH_ASSOC);
                 <?php endif; ?>
 
                 <div style="margin-top:10px;">
-                    <a href="export/hasil_cvs.php?polling_id=<?= $poll['id'] ?>">CSV</a>
+                    <a href="export/hasil_csv.php?polling_id=<?= $poll['id'] ?>">CSV</a>
                     |
-                    <a href="export/hasil_pdf.php?polling_id=<?= $poll['id'] ?>">PDF</a>
+                    <a href="export/print_hasil_pdf.php?id=<?= $poll['id'] ?>">PDF</a>
                 </div>
 
                 <hr>
