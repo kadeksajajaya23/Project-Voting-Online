@@ -27,7 +27,7 @@ $stmt->execute([$polling_id]);
 $polling = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$polling) {
-    die('Polling tidak ditemukan' . $polling_id);
+    die('Polling tidak ditemukan');
 }
 
 /* =========================
@@ -45,38 +45,44 @@ $voted = false;
 $votedOptionId = null;
 
 if (isset($_POST['vote'])) {
-
     if ($isClosed) {
         $errorVote = 'Polling sudah ditutup';
-    } else if (!isset($_SESSION['user_id'])) {
+    } elseif (!isset($_SESSION['user_id'])) {
         header("Location: ../auth/login.php");
         exit;
-    } else if (!isset($_POST['option_id'])) {
+    } elseif (!isset($_POST['option_id'])) {
         $errorVote = 'Opsi tidak valid';
     } else {
         $user_id   = $_SESSION['user_id'];
         $option_id = (int) $_POST['option_id'];
 
         // Cek apakah sudah vote
-        $cek = $conn->prepare("
-            SELECT id FROM votes
-            WHERE user_id = ? AND polling_id = ?
-        ");
+        $cek = $conn->prepare("SELECT id FROM votes WHERE user_id = ? AND polling_id = ?");
         $cek->execute([$user_id, $polling_id]);
 
         if ($cek->rowCount() > 0) {
             $errorVote = 'Anda sudah melakukan voting';
         } else {
             // Simpan vote
-            $stmtVote = $conn->prepare("
-                INSERT INTO votes (user_id, polling_id, option_id)
-                VALUES (?, ?, ?)
-            ");
+            $stmtVote = $conn->prepare("INSERT INTO votes (user_id, polling_id, option_id) VALUES (?, ?, ?)");
             $stmtVote->execute([$user_id, $polling_id, $option_id]);
 
             // Tandai bahwa user sudah vote
             $voted = true;
             $votedOptionId = $option_id;
+
+            // === PERBARUI DATA HASIL VOTING SECARA REAL-TIME ===
+            $stmtHasil = $conn->prepare("
+                SELECT o.id, o.nama_opsi, COUNT(v.id) AS total_vote
+                FROM options o
+                LEFT JOIN votes v ON o.id = v.option_id
+                WHERE o.polling_id = ?
+                GROUP BY o.id
+            ");
+            $stmtHasil->execute([$polling_id]);
+            $userResult = $stmtHasil->fetchAll(PDO::FETCH_ASSOC);
+            $totalVotes = array_sum(array_column($userResult, 'total_vote'));
+            // ===================================================
         }
     }
 }
@@ -93,16 +99,9 @@ if (isset($_POST['komentar'])) {
     } else {
         $isi = trim($_POST['isi']);
         if ($isi !== '') {
-            $stmtKomen = $conn->prepare("
-                INSERT INTO comments (polling_id, user_id, isi, status)
-                VALUES (?, ?, ?, 'approved')
-            ");
-            $stmtKomen->execute([
-                $polling_id,
-                $_SESSION['user_id'],
-                $isi
-            ]);
-            $successKomentar = "Komentar berhasil dikirim dan menunggu persetujuan.";
+            $stmtKomen = $conn->prepare("INSERT INTO comments (polling_id, user_id, isi, status) VALUES (?, ?, ?, 'approved')");
+            $stmtKomen->execute([$polling_id, $_SESSION['user_id'], $isi]);
+            $successKomentar = "Komentar berhasil dikirim.";
         }
     }
 }
@@ -115,31 +114,41 @@ $stmtOpt->execute([$polling_id]);
 $options = $stmtOpt->fetchAll(PDO::FETCH_ASSOC);
 
 /* =========================
-   AMBIL HASIL VOTING UNTUK DITAMPILKAN
+   JIKA BELUM ADA VOTE BARU, AMBIL DATA AWAL
 ========================= */
-$userResult = [];
-$totalVotes = 0;
-
-if (isset($_SESSION['user_id'])) {
-    // Ambil hasil voting untuk ditampilkan (untuk semua user yang sudah vote)
-    $stmtHasil = $conn->prepare("
-        SELECT o.nama_opsi, COUNT(v.id) AS total_vote
-        FROM options o
-        LEFT JOIN votes v ON o.id = v.option_id
-        WHERE o.polling_id = ?
-        GROUP BY o.id
-    ");
-    $stmtHasil->execute([$polling_id]);
-    $userResult = $stmtHasil->fetchAll(PDO::FETCH_ASSOC);
-    $totalVotes = array_sum(array_column($userResult, 'total_vote'));
+if (!isset($userResult)) {
+    $userResult = [];
+    $totalVotes = 0;
+    if (isset($_SESSION['user_id'])) {
+        $stmtHasil = $conn->prepare("
+            SELECT o.id, o.nama_opsi, COUNT(v.id) AS total_vote
+            FROM options o
+            LEFT JOIN votes v ON o.id = v.option_id
+            WHERE o.polling_id = ?
+            GROUP BY o.id
+        ");
+        $stmtHasil->execute([$polling_id]);
+        $userResult = $stmtHasil->fetchAll(PDO::FETCH_ASSOC);
+        $totalVotes = array_sum(array_column($userResult, 'total_vote'));
+    }
 }
 
-// Cek apakah user sudah vote (untuk menentukan tampilkan form atau hasil)
+// Cek apakah user sudah vote (untuk fallback jika tidak lewat POST)
 $hasVoted = false;
+$votedOptionIdFallback = null;
 if (isset($_SESSION['user_id'])) {
-    $stmtCheck = $conn->prepare("SELECT id FROM votes WHERE user_id = ? AND polling_id = ?");
+    $stmtCheck = $conn->prepare("SELECT option_id FROM votes WHERE user_id = ? AND polling_id = ?");
     $stmtCheck->execute([$_SESSION['user_id'], $polling_id]);
-    $hasVoted = $stmtCheck->rowCount() > 0;
+    $voteRecord = $stmtCheck->fetch();
+    if ($voteRecord) {
+        $hasVoted = true;
+        $votedOptionIdFallback = $voteRecord['option_id'];
+    }
+}
+
+// Gunakan fallback jika belum ada $votedOptionId
+if (!$voted && $hasVoted) {
+    $votedOptionId = $votedOptionIdFallback;
 }
 
 require_once '../layouts/header.php';
@@ -147,7 +156,6 @@ require_once '../layouts/header.php';
 
 <div class="container">
     <div class="card">
-
         <h2><?= htmlspecialchars($polling['judul']) ?></h2>
         <p><?= htmlspecialchars($polling['deskripsi']) ?></p>
 
@@ -165,13 +173,11 @@ require_once '../layouts/header.php';
         <!-- FORM VOTE ATAU HASIL VOTING -->
         <?php if ($isActive): ?>
             <?php if ($voted || $hasVoted): ?>
-                <!-- TAMPILKAN HASIL VOTING -->
                 <h3>Hasil Voting</h3>
                 <p style="font-style: italic; color: #666;">Hasil ini bersifat sementara (hanya terlihat oleh Anda).</p>
-
                 <?php foreach ($userResult as $opt):
                     $percent = ($totalVotes > 0) ? round(($opt['total_vote'] / $totalVotes) * 100, 1) : 0;
-                    $barColor = ($opt['total_vote'] > 0 && $opt['id'] == $votedOptionId) ? '#4caf50' : '#e0e0e0';
+                    $barColor = ($votedOptionId && $opt['id'] == $votedOptionId) ? '#4caf50' : '#e0e0e0';
                 ?>
                     <div class="result-row">
                         <strong><?= htmlspecialchars($opt['nama_opsi']) ?></strong> — 
@@ -183,7 +189,6 @@ require_once '../layouts/header.php';
                     <br>
                 <?php endforeach; ?>
             <?php else: ?>
-                <!-- TAMPILKAN FORM VOTE -->
                 <form method="post">
                     <?php foreach ($options as $opt): ?>
                         <div class="option-row">
@@ -193,8 +198,6 @@ require_once '../layouts/header.php';
                     <?php endforeach; ?>
                     <button type="submit" name="vote" class="btn-vote">Vote</button>
                 </form>
-
-                <!-- TAMPILKAN PESAN ERROR JIKA ADA -->
                 <?php if (isset($errorVote)): ?>
                     <p style="color:red; margin-top: 10px;"><?= $errorVote ?></p>
                 <?php endif; ?>
@@ -205,11 +208,9 @@ require_once '../layouts/header.php';
 
         <!-- KOMENTAR -->
         <h4>Komentar</h4>
-
         <?php if (!empty($errorKomentar)): ?>
             <p style="color:red"><?= $errorKomentar ?></p>
         <?php endif; ?>
-
         <?php if (!empty($successKomentar)): ?>
             <p style="color:green"><?= $successKomentar ?></p>
         <?php endif; ?>
@@ -218,7 +219,6 @@ require_once '../layouts/header.php';
             <textarea name="isi" required></textarea><br>
             <button type="submit" name="komentar">Kirim Komentar</button>
         </form>
-
     </div>
 </div>
 
