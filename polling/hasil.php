@@ -1,5 +1,13 @@
 <?php
 session_start();
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../auth/login.php");
+    exit;
+}
+
+// Set timezone agar konsisten di seluruh aplikasi
+date_default_timezone_set('Asia/Makassar');
+
 require_once '../config/Database.php';
 require_once '../layouts/header.php';
 
@@ -20,27 +28,28 @@ $pollings = $stmtPolling->fetchAll(PDO::FETCH_ASSOC);
             <p>Belum ada polling.</p>
         <?php endif; ?>
 
-        <?php foreach ($pollings as $poll): ?>
+        <?php foreach ($pollings as $poll): 
+            // Hitung status berdasarkan waktu server
+            $endTimestamp = strtotime($poll['end_date']);
+            $isClosed = ($endTimestamp <= time());
+        ?>
 
-            <?php
-            /* JIKA POLLING BELUM SELESAI */
-            if (strtotime($poll['end_date']) > time()):
-            ?>
+            <?php if (!$isClosed): ?>
+                <!-- POLLING MASIH BERLANGSUNG -->
                 <div class="poll-result">
                     <h3><?= htmlspecialchars($poll['judul']) ?></h3>
                     <p><?= htmlspecialchars($poll['deskripsi']) ?></p>
-
                     <p class="text-muted">
                         ⏳ Polling masih berlangsung.<br>
                         Hasil akan ditampilkan setelah polling berakhir
-                        (<?= date('d M Y H:i', strtotime($poll['end_date'])) ?>)
+                        (<span class="local-time" data-timestamp="<?= $endTimestamp ?>"></span>)
                     </p>
                     <hr>
                 </div>
                 <?php continue; ?>
             <?php endif; ?>
 
-            <!-- JIKA POLLING SUDAH SELESAI -->
+            <!-- POLLING SUDAH DITUTUP -->
             <div class="poll-result">
                 <h3><?= htmlspecialchars($poll['judul']) ?></h3>
                 <p><?= htmlspecialchars($poll['deskripsi']) ?></p>
@@ -74,23 +83,19 @@ $pollings = $stmtPolling->fetchAll(PDO::FETCH_ASSOC);
                     <?php endforeach; ?>
                 </ul>
 
-                <!-- =========================
-                     KOMENTAR (SUDAH FIX)
-                ========================== -->
+                <!-- KOMENTAR -->
                 <?php
                 $stmtKomentar = $conn->prepare("
                     SELECT isi
                     FROM comments
-                    WHERE polling_id = ?
+                    WHERE polling_id = ? AND status = 'approved'
                 ");
-
                 $stmtKomentar->execute([$poll['id']]);
                 $komentar = $stmtKomentar->fetchAll(PDO::FETCH_ASSOC);
                 ?>
 
                 <h4>Komentar</h4>
-
-                <?php if (count($komentar) === 0): ?>
+                <?php if (empty($komentar)): ?>
                     <p>Belum ada komentar.</p>
                 <?php else: ?>
                     <?php foreach ($komentar as $k): ?>
@@ -102,14 +107,13 @@ $pollings = $stmtPolling->fetchAll(PDO::FETCH_ASSOC);
                 <?php endif; ?>
 
                 <div style="margin-top:10px;">
-                    <a href="export/hasil_cvs.php?polling_id=<?= $poll['id'] ?>">CSV</a>
+                    <a href="export/hasil_csv.php?polling_id=<?= $poll['id'] ?>">CSV</a>
                     |
-                    <a href="export/hasil_pdf.php?polling_id=<?= $poll['id'] ?>">PDF</a>
+                    <a href="export/print_hasil_pdf.php?id=<?= $poll['id'] ?>">PDF</a>
                 </div>
 
                 <hr>
             </div>
-
         <?php endforeach; ?>
     </div>
 </div>
