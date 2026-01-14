@@ -3,9 +3,6 @@
 > **Project Back-End Web Development**
 > Aplikasi manajemen pemungutan suara berbasis web yang transparan, aman, dan *real-time* menggunakan PHP Native.
 
-![PHP Version](https://img.shields.io/badge/PHP-8.0%2B-777BB4?style=flat&logo=php&logoColor=white)
-![Database](https://img.shields.io/badge/Database-MariaDB%20%2F%20MySQL-003545?style=flat&logo=mariadb&logoColor=white)
-![Frontend](https://img.shields.io/badge/Frontend-Bootstrap%205-7952B3?style=flat&logo=bootstrap&logoColor=white)
 
 ## 📖 Deskripsi Sistem
 Aplikasi ini dirancang untuk menangani proses voting digital dengan integritas tinggi. Sistem memungkinkan pengguna membuat polling dengan batas waktu tertentu (`end_date`), melakukan voting (satu akun satu suara), dan memantau hasil secara langsung.
@@ -60,7 +57,7 @@ Pengembangan dilakukan dengan metode *Full Coding* kolaboratif:
 
 ## 🛠️ Tools & Teknologi
 * **Bahasa:** PHP 8.x (Native)
-* **Database:** MariaDB / MySQL
+* **Database:** MySQL
 * **Editor:** Visual Studio Code
 * **Server:** PHP Built-in Server
 
@@ -69,9 +66,10 @@ Pengembangan dilakukan dengan metode *Full Coding* kolaboratif:
 ## ⚙️ Cara Instalasi & Menjalankan (VS Code)
 
 ### Prasyarat
-1.  **PHP** telah terinstall dan terdaftar di Environment Variable (Path).
-2.  **MySQL Server** (bisa menggunakan XAMPP hanya untuk menyalakan modul MySQL).
-3.  **Visual Studio Code**.
+1.  **PHP** 
+2.  **MySQL Server** 
+3.  **Visual Studio Code**
+
 
 ### Langkah-langkah
 1.  **Persiapan Database**
@@ -100,4 +98,55 @@ Pengembangan dilakukan dengan metode *Full Coding* kolaboratif:
       ```
     * Aplikasi siap digunakan.
 
----
+##  📂 Struktur Folder
+Berikut adalah arsitektur direktori proyek ini:
+
+```text
+Project-Voting-Online/
+│
+├── admin/                  # Modul Admin
+│   └── moderasi_komentar.php   # Halaman untuk moderasi komentar oleh pemilik polling
+│
+├── assets/                 # Aset Statis
+│   ├── script.js               # JavaScript (show password, local time logic)
+│   └── style.css               # Styling CSS kustom aplikasi
+│
+├── auth/                   # Halaman Autentikasi
+│   ├── login.php               # Formulir masuk
+│   ├── logout.php              # Script destroy session
+│   └── register.php            # Formulir pendaftaran user baru
+│
+├── classes/                # Logic Layer (OOP Classes)
+│   ├── comment.php             # Logika pengelolaan komentar
+│   ├── notification.php        # Logika notifikasi sistem
+│   ├── option.php              # Logika opsi jawaban polling
+│   ├── polling.php             # Logika utama manajemen polling
+│   ├── user.php                # Logika manajemen user
+│   └── vote.php                # Logika transaksi voting
+│
+├── config/                 # Konfigurasi Sistem
+│   └── database.php            # Koneksi database MySQL menggunakan PDO
+│
+├── layouts/                # Komponen UI Reusable
+│   ├── footer.php              # Bagian bawah halaman
+│   └── header.php              # Bagian atas (navbar & meta tags)
+│
+├── models/                 # Data Layer
+│   └── user.php                # Model representasi data user
+│
+├── polling/                # Modul Halaman Polling
+│   ├── export/                 # Fitur Ekspor Data
+│   │   ├── hasil_csv.php           # Download hasil sebagai CSV
+│   │   └── print_hasil_pdf.php     # Cetak hasil ke PDF
+│   ├── create.php              # Form buat polling baru
+│   ├── detail.php              # Halaman voting & hasil sementara
+│   ├── edit.php                # Form edit polling
+│   ├── delete.php              # Proses hapus polling
+│   └── hasil.php               # Halaman rekap hasil akhir
+│
+├── vote/                   # Modul Pemrosesan Suara
+│   └── store.php               # (Legacy/Backend) Proses simpan vote
+│
+├── index.php               # Halaman Utama (Dashboard/Landing)
+├── voting_db.sql           # File skema database untuk di-import
+└── Readme.md               # Dokumentasi proyek
