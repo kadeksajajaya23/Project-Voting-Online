@@ -86,9 +86,11 @@ $pollings = $stmtPolling->fetchAll(PDO::FETCH_ASSOC);
                 <!-- KOMENTAR -->
                 <?php
                 $stmtKomentar = $conn->prepare("
-                    SELECT isi
-                    FROM comments
-                    WHERE polling_id = ? AND status = 'approved'
+                    SELECT c.isi, u.username
+                    FROM comments c
+                    JOIN users u ON c.user_id = u.id
+                    WHERE c.polling_id = ? AND c.status = 'approved'
+                    ORDER BY c.id DESC
                 ");
                 $stmtKomentar->execute([$poll['id']]);
                 $komentar = $stmtKomentar->fetchAll(PDO::FETCH_ASSOC);
@@ -100,7 +102,7 @@ $pollings = $stmtPolling->fetchAll(PDO::FETCH_ASSOC);
                 <?php else: ?>
                     <?php foreach ($komentar as $k): ?>
                         <div class="comment-box">
-                            <p><?= nl2br(htmlspecialchars($k['isi'])) ?></p>
+                            <p><strong><?= htmlspecialchars($k['username']) ?>:</strong> <?= nl2br(htmlspecialchars($k['isi'])) ?></p>
                         </div>
                         <hr>
                     <?php endforeach; ?>

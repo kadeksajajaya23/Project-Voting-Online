@@ -27,7 +27,7 @@ $stmt->execute([$polling_id]);
 $polling = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$polling) {
-    die('Polling tidak ditemukan');
+    die('Polling tidak ditemukan' . $polling_id);
 }
 
 /* =========================
@@ -95,7 +95,7 @@ if (isset($_POST['komentar'])) {
         if ($isi !== '') {
             $stmtKomen = $conn->prepare("
                 INSERT INTO comments (polling_id, user_id, isi, status)
-                VALUES (?, ?, ?, 'pending')
+                VALUES (?, ?, ?, 'approved')
             ");
             $stmtKomen->execute([
                 $polling_id,

@@ -37,11 +37,11 @@ class Comment {
 }
 
 public function getPendingByPollingOwner($polling_id, $owner_id) {
-    $stmt = $this->conn->prepare(
-        "SELECT c.* FROM comments c
-         JOIN polling p ON c.polling_id = p.id
-         WHERE p.user_id = ? AND c.status='pending'"
-    );
+    $stmt = $this->conn->prepare("
+        SELECT c.* FROM comments c
+        JOIN pollings p ON c.polling_id = p.id
+        WHERE p.user_id = ? AND c.status = 'pending'
+    ");
     $stmt->execute([$owner_id]);
     return $stmt;
 }
